@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using refactor_me.Model.Contract;
-using refactor_me.Models;
 using System.Data.SqlClient;
 using System.Data;
 
