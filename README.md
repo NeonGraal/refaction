@@ -12,3 +12,4 @@
    3. Refactor controller SearchByName to use service
    4. Refactor controller GetProduct to use service
    5. Refactor controller Create to use service
+   6. Refactor controller Update to use service

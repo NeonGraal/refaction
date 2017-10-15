@@ -38,6 +38,7 @@ namespace refactor_me.Model.Contract
         IProductList FindByName(string name);
         IProduct Get(Guid id);
         void Create(IProduct product);
+        void Update(Guid id, IProduct product);
     }
 
     public interface IProductsRepository

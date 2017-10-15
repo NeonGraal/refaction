@@ -128,10 +128,13 @@ namespace refactor_me.Model.Implementation.Tests
             prod.SetupGet(p => p.Id).Returns(_id1);
 
             _repo.Setup(r => r.Get(_id1)).Returns<IProduct>(null);
+            _repo.Setup(r => r.Save(prod.Object, true)).Verifiable();
             _repo.Setup(r => r.Save(prod.Object, false)).Verifiable();
 
             _service.Create(prod.Object);
 
+            _repo.Verify(r => r.Get(_id1), Times.Once);
+            _repo.Verify(r => r.Save(prod.Object, true), Times.Never);
             _repo.Verify(r => r.Save(prod.Object, false), Times.Once);
         }
 
@@ -142,11 +145,60 @@ namespace refactor_me.Model.Implementation.Tests
             prod.SetupGet(p => p.Id).Returns(_id1);
 
             _repo.Setup(r => r.Get(_id1)).Returns(prod.Object);
-            _repo.Setup(r => r.Save(prod.Object, false)).Verifiable();
+            _repo.Setup(r => r.Save(It.IsAny<IProduct>(), It.IsAny<bool>())).Verifiable();
 
             _service.Create(prod.Object);
 
-            _repo.Verify(r => r.Save(prod.Object, false), Times.Never);
+            _repo.Verify(r => r.Get(_id1), Times.Once);
+            _repo.Verify(r => r.Save(It.IsAny<IProduct>(), It.IsAny<bool>()), Times.Never);
+        }
+
+        [Test]
+        public void UpdateDoesntSaveNewProduct()
+        {
+            var prod = new Mock<IProduct>(MockBehavior.Strict);
+
+            _repo.Setup(r => r.Get(_id1)).Returns<IProduct>(null);
+            _repo.Setup(r => r.Save(It.IsAny<IProduct>(), It.IsAny<bool>())).Verifiable();
+
+            _service.Update(_id1, prod.Object);
+
+            _repo.Verify(r => r.Get(_id1), Times.Once);
+            _repo.Verify(r => r.Save(It.IsAny<IProduct>(), It.IsAny<bool>()), Times.Never);
+        }
+
+        [Test]
+        public void UpdateSavesExistingProduct()
+        {
+            var name = "Test Name";
+            var description = "Test Description";
+            var price = 123.45m;
+            var deliveryPrice = 12.34m;
+
+            var prod1 = new Mock<IProduct>(MockBehavior.Strict);
+            var prod2 = new Mock<IProduct>(MockBehavior.Strict);
+            prod2.SetupGet(p => p.Name).Returns(name);
+            prod2.SetupGet(p => p.Description).Returns(description);
+            prod2.SetupGet(p => p.Price).Returns(price);
+            prod2.SetupGet(p => p.DeliveryPrice).Returns(deliveryPrice);
+
+            IProduct prod3 = null;
+
+            _repo.Setup(r => r.Get(_id1)).Returns(prod1.Object);
+            _repo.Setup(r => r.Save(It.IsAny<IProduct>(), false)).Verifiable();
+            _repo.Setup(r => r.Save(It.IsAny<IProduct>(), true)).Callback<IProduct, bool>((p, _) => prod3 = p);
+
+            _service.Update(_id1, prod2.Object);
+
+            _repo.Verify(r => r.Get(_id1), Times.Once);
+            _repo.Verify(r => r.Save(It.IsAny<IProduct>(), false), Times.Never);
+            _repo.Verify(r => r.Save(It.IsAny<IProduct>(), true), Times.Once);
+
+            prod3.Id.Should().Be(_id1);
+            prod3.Name.Should().Be(name);
+            prod3.Description.Should().Be(description);
+            prod3.Price.Should().Be(price);
+            prod3.DeliveryPrice.Should().Be(deliveryPrice);
         }
     }
 }

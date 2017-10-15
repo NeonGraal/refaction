@@ -52,6 +52,39 @@ namespace refactor_me.Model.Implementation
             return result;
         }
 
+        public void Update(Guid id, IProduct product)
+        {
+            var existing = _repo.Get(id);
+
+            if (existing != null)
+            {
+                var updated = new Product(id, product);
+                _repo.Save(updated, true);
+            }
+        }
+
+        private class Product : IProduct
+        {
+            public Product(Guid id, IProduct product)
+            {
+                Id = id;
+                Name = product.Name;
+                Description = product.Description;
+                Price = product.Price;
+                DeliveryPrice = product.DeliveryPrice;
+            }
+
+            public decimal DeliveryPrice { get; }
+
+            public string Description { get; }
+
+            public Guid Id { get; }
+
+            public string Name { get; }
+
+            public decimal Price { get; }
+        }
+
         private class ProductList : IProductList
         {
             private readonly List<IProduct> _items;
