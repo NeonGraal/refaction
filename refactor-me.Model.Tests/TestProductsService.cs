@@ -200,5 +200,30 @@ namespace refactor_me.Model.Implementation.Tests
             prod3.Price.Should().Be(price);
             prod3.DeliveryPrice.Should().Be(deliveryPrice);
         }
+
+        [Test]
+        public void DeleteDoesntRemoveNewProduct()
+        {
+            _repo.Setup(r => r.Get(_id1)).Returns<IProduct>(null);
+
+            _service.Delete(_id1);
+
+            _repo.Verify(r => r.Get(_id1), Times.Once);
+            _repo.Verify(r => r.Remove(_id1), Times.Never);
+        }
+
+        [Test]
+        public void DeleteRemovesExistingProduct()
+        {
+            var prod = new Mock<IProduct>(MockBehavior.Strict);
+
+            _repo.Setup(r => r.Get(_id1)).Returns(prod.Object);
+            _repo.Setup(r => r.Remove(_id1)).Verifiable();
+
+            _service.Delete(_id1);
+
+            _repo.Verify(r => r.Get(_id1), Times.Once);
+            _repo.Verify(r => r.Remove(_id1), Times.Once);
+        }
     }
 }

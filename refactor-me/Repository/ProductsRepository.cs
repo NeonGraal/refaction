@@ -44,11 +44,22 @@ namespace refactor_me.Repository
             return ids;
         }
 
-        public IProduct Get(Guid id)
+        private SqlCommand IdSqlCommand(string sql, Guid id)
         {
             var conn = Helpers.NewConnection();
-            var cmd = new SqlCommand($"select * from product where id = '{id}'", conn);
             conn.Open();
+
+            var idParam = "@Id";
+            var cmd = new SqlCommand($"{sql} = {idParam}", conn);
+            cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);
+            cmd.Parameters[idParam].Value = id;
+
+            return cmd;
+        }
+
+        public IProduct Get(Guid id)
+        {            
+            var cmd = IdSqlCommand("select * from product where id", id);
 
             var rdr = cmd.ExecuteReader();
             if (!rdr.Read())
@@ -62,6 +73,15 @@ namespace refactor_me.Repository
                 Price = decimal.Parse(rdr["Price"].ToString()),
                 DeliveryPrice = decimal.Parse(rdr["DeliveryPrice"].ToString())
             };
+        }
+
+        public void Remove(Guid id)
+        {
+            var cmd = IdSqlCommand("delete from productoption where productid", id);
+            cmd.ExecuteNonQuery();
+
+            cmd = IdSqlCommand("delete from product where id = ", id);
+            cmd.ExecuteNonQuery();
         }
 
         public void Save(IProduct product, bool exists)

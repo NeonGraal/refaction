@@ -39,6 +39,7 @@ namespace refactor_me.Model.Contract
         IProduct Get(Guid id);
         void Create(IProduct product);
         void Update(Guid id, IProduct product);
+        void Delete(Guid id);
     }
 
     public interface IProductsRepository
@@ -48,5 +49,6 @@ namespace refactor_me.Model.Contract
 
         IProduct Get(Guid id);
         void Save(IProduct product, bool exists);
+        void Remove(Guid id);
     }
 }

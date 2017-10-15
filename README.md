@@ -13,3 +13,4 @@
    4. Refactor controller GetProduct to use service
    5. Refactor controller Create to use service
    6. Refactor controller Update to use service
+   7. Refactor controller Delete to use service

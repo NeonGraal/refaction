@@ -59,8 +59,7 @@ namespace refactor_me.Controllers
         [HttpDelete]
         public void Delete(Guid id)
         {
-            var product = new Product(id);
-            product.Delete();
+            _products.Delete(id);
         }
 
         [Route("{productId}/options")]

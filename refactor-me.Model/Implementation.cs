@@ -22,6 +22,16 @@ namespace refactor_me.Model.Implementation
             }
         }
 
+        public void Delete(Guid id)
+        {
+            var existing = _repo.Get(id);
+
+            if (existing != null)
+            {
+                _repo.Remove(id);
+            }
+        }
+
         public IProductList FindByName(string name)
         {
             var result = new ProductList();
