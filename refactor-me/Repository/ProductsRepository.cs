@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using refactor_me.Model.Contract;
 using System.Data.SqlClient;
-using System.Data;
 
 namespace refactor_me.Repository
 {
@@ -10,58 +9,55 @@ namespace refactor_me.Repository
     {
         public IEnumerable<Guid> All()
         {
-            var ids = new List<Guid>();
             var conn = Helpers.NewConnection();
             var cmd = new SqlCommand("select id from product", conn);
 
             conn.Open();
 
             var rdr = cmd.ExecuteReader();
-            while (rdr.Read())
-            {
-                var id = Guid.Parse(rdr["id"].ToString());
-                ids.Add(id);
-            }
+            var ids = ToGuidList(rdr);
             return ids;
         }
 
         public IEnumerable<Guid> ByName(string name)
         {
-            var ids = new List<Guid>();
             var conn = Helpers.NewConnection();
             var nameParam = "@name";
             var cmd = new SqlCommand($"select id from product where lower(name) like {nameParam}", conn);
 
-            cmd.Parameters.Add(nameParam, SqlDbType.NVarChar);
-            cmd.Parameters[nameParam].Value = "%" + name.ToLower() + "%";
+            cmd.Parameters.AddWithValue(nameParam, $"%{name.ToLower()}%");
 
             conn.Open();
 
             var rdr = cmd.ExecuteReader();
-            while (rdr.Read())
-            {
-                var id = Guid.Parse(rdr["id"].ToString());
-                ids.Add(id);
-            }
+            var ids = ToGuidList(rdr);
             return ids;
         }
 
         public IProduct Get(Guid id)
-        {            
+        {
             var cmd = IdSqlCommand("select * from product where id", id);
 
             var rdr = cmd.ExecuteReader();
             if (!rdr.Read())
                 return null;
 
-            return new Product
+            var idIndex = rdr.GetOrdinal("id");
+            var nameIndex = rdr.GetOrdinal("name");
+            var descrIndex = rdr.GetOrdinal("description");
+            var priceIndex = rdr.GetOrdinal("price");
+            var deliveryIndex = rdr.GetOrdinal("deliveryprice");
+
+            var result = new Product
             {
-                Id = Guid.Parse(rdr["Id"].ToString()),
-                Name = rdr["Name"].ToString(),
-                Description = (DBNull.Value == rdr["Description"]) ? null : rdr["Description"].ToString(),
-                Price = decimal.Parse(rdr["Price"].ToString()),
-                DeliveryPrice = decimal.Parse(rdr["DeliveryPrice"].ToString())
+                Id = rdr.GetGuid(idIndex),
+                Name = rdr.GetString(nameIndex),
+                Description = rdr.IsDBNull(descrIndex) ? null : rdr.GetString(descrIndex),
+                Price = rdr.GetDecimal(priceIndex),
+                DeliveryPrice = rdr.GetDecimal(deliveryIndex)
             };
+
+            return result;
         }
 
         public void Remove(Guid id)
@@ -95,19 +91,13 @@ namespace refactor_me.Repository
 
                 cmd = new SqlCommand($"insert into product (id, name, description, price, deliveryprice) values ({idParam}, {nameParam}, {descrParam}, {priceParam}, {deliveryParam})", conn);
 
-                cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);
-                cmd.Parameters[idParam].Value = product.Id;
+                cmd.Parameters.AddWithValue(idParam, product.Id);
             }
 
-            cmd.Parameters.Add(nameParam, SqlDbType.NVarChar);
-            cmd.Parameters.Add(descrParam, SqlDbType.NVarChar);
-            cmd.Parameters.Add(priceParam, SqlDbType.Decimal);
-            cmd.Parameters.Add(deliveryParam, SqlDbType.Decimal);
-
-            cmd.Parameters[nameParam].Value = product.Name;
-            cmd.Parameters[descrParam].Value = product.Description;
-            cmd.Parameters[priceParam].Value = product.Price;
-            cmd.Parameters[deliveryParam].Value = product.DeliveryPrice;
+            cmd.Parameters.AddWithValue(nameParam, product.Name);
+            cmd.Parameters.AddWithValue(descrParam, product.Description);
+            cmd.Parameters.AddWithValue(priceParam, product.Price);
+            cmd.Parameters.AddWithValue(deliveryParam, product.DeliveryPrice);
 
             cmd.ExecuteNonQuery();
         }
@@ -122,7 +112,7 @@ namespace refactor_me.Repository
 
             public string Name { get; set; }
 
-            public decimal Price { get; set; }        
+            public decimal Price { get; set; }
         }
     }
 }

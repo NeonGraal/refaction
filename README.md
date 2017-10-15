@@ -15,3 +15,13 @@
    6. Refactor controller Update to use service
    7. Refactor controller Delete to use service
    8. Refactor All Product Option Controller methods to use Options service
+   9. Refactor for readability
+   
+## Functional tests
+These are written in Python and run using Nose (eg. `py -m nose`)
+
+To install:
+1. Install Python 3.6
+2. Run `pip install -r requirements.txt`
+
+They assume that the Web Api is running at a base URL of `http://localhost:58123`

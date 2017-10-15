@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace refactor_me.Repository
 {
@@ -12,12 +15,20 @@ namespace refactor_me.Repository
             var idParam = "@Id";
             var cmd = new SqlCommand($"{sql} = {idParam}", conn);
 
-            cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);
-            cmd.Parameters[idParam].Value = id;
+            cmd.Parameters.AddWithValue(idParam, id);
 
             conn.Open();
 
             return cmd;
+        }
+
+        protected IEnumerable<Guid> ToGuidList(SqlDataReader reader)
+        {
+            var idIndex = reader.GetOrdinal("id");
+            var ids = reader.Cast<IDataRecord>()
+                .Select(d => d.GetGuid(idIndex))
+                .ToList();
+            return ids;
         }
     }
 }
