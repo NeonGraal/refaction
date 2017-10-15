@@ -113,12 +113,13 @@ namespace refactor_me.Model.Implementation.Tests
         [Test]
         public void GetKnownReturnsProduct()
         {
-            var prod1 = new Mock<IProduct>(MockBehavior.Strict);
-            _repo.Setup(r => r.Get(_id1)).Returns(prod1.Object);
+            var prod = new Mock<IProduct>(MockBehavior.Strict);
+
+            _repo.Setup(r => r.Get(_id1)).Returns(prod.Object);
 
             var result = _service.Get(_id1);
 
-            result.Should().Be(prod1.Object);
+            result.Should().Be(prod.Object);
         }
 
         [Test]
@@ -181,6 +182,7 @@ namespace refactor_me.Model.Implementation.Tests
 
             var prod1 = new Mock<IProduct>(MockBehavior.Strict);
             var prod2 = new Mock<IProduct>(MockBehavior.Strict);
+
             prod2.SetupGet(p => p.Name).Returns(name);
             prod2.SetupGet(p => p.Description).Returns(description);
             prod2.SetupGet(p => p.Price).Returns(price);

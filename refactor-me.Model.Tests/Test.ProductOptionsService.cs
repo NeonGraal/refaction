@@ -76,6 +76,7 @@ namespace refactor_me.Model.Implementation.Tests
         public void GetKnownReturnsProductOption()
         {
             var opt = new Mock<IProductOption>(MockBehavior.Strict);
+
             _repo.Setup(r => r.Get(_id1)).Returns(opt.Object);
 
             var result = _service.Get(_id1);
@@ -90,6 +91,7 @@ namespace refactor_me.Model.Implementation.Tests
             var description = "Test Description";
 
             var opt1 = new Mock<IProductOption>(MockBehavior.Strict);
+
             opt1.SetupGet(p => p.Id).Returns(_id1);
             opt1.SetupGet(p => p.ProductId).Returns(_id2); //  Yes not _prodId
             opt1.SetupGet(p => p.Name).Returns(name);
@@ -117,6 +119,7 @@ namespace refactor_me.Model.Implementation.Tests
         public void CreateDoesntSaveExistingProductOption()
         {
             var opt = new Mock<IProductOption>(MockBehavior.Strict);
+
             opt.SetupGet(p => p.Id).Returns(_id1);
 
             _repo.Setup(r => r.Get(_id1)).Returns(opt.Object);
@@ -150,6 +153,7 @@ namespace refactor_me.Model.Implementation.Tests
 
             var opt1 = new Mock<IProductOption>(MockBehavior.Strict);
             var opt2 = new Mock<IProductOption>(MockBehavior.Strict);
+
             opt2.SetupGet(p => p.Id).Returns(_id2);
             opt2.SetupGet(p => p.ProductId).Returns(_prodId);
             opt2.SetupGet(p => p.Name).Returns(name);

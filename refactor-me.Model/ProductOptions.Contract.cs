@@ -5,12 +5,9 @@ namespace refactor_me.Model.Contract
 {
     public interface IProductOption
     {
-        Guid Id { get; }
-
+        Guid Id { get; }  
         Guid ProductId { get; }
-
         string Name { get; }
-
         string Description { get; }
     }
 

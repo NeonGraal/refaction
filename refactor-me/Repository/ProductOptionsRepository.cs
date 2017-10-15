@@ -19,6 +19,7 @@ namespace refactor_me.Repository
                 var id = Guid.Parse(rdr["id"].ToString());
                 ids.Add(id);
             }
+
             return ids;
         }
 
@@ -41,6 +42,7 @@ namespace refactor_me.Repository
         public void Remove(Guid id)
         {
             var cmd = IdSqlCommand("delete from productoption where id", id);
+
             cmd.ExecuteNonQuery();
         }
 
@@ -59,7 +61,9 @@ namespace refactor_me.Repository
             else
             {
                 var conn = Helpers.NewConnection();
+
                 conn.Open();
+
                 cmd = new SqlCommand($"insert into productoption (id, productid, name, description) values ({idParam}, {prodIdParam}, {nameParam}, {descrParam})", conn);
 
                 cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);

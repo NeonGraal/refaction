@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using refactor_me.Model.Contract;
-using System.Linq;
 using System;
 
 namespace refactor_me.Model.Implementation

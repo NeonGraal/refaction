@@ -6,13 +6,9 @@ namespace refactor_me.Model.Contract
     public interface IProduct
     {
         Guid Id { get; }
-
         string Name { get; }
-
         string Description { get; }
-
         decimal Price { get; }
-
         decimal DeliveryPrice { get; }
     }
 
@@ -35,7 +31,6 @@ namespace refactor_me.Model.Contract
     {
         IEnumerable<Guid> All();
         IEnumerable<Guid> ByName(string name);
-
         IProduct Get(Guid id);
         void Save(IProduct product, bool exists);
         void Remove(Guid id);

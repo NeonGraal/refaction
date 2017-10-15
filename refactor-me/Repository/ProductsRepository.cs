@@ -13,6 +13,7 @@ namespace refactor_me.Repository
             var ids = new List<Guid>();
             var conn = Helpers.NewConnection();
             var cmd = new SqlCommand("select id from product", conn);
+
             conn.Open();
 
             var rdr = cmd.ExecuteReader();
@@ -30,8 +31,10 @@ namespace refactor_me.Repository
             var conn = Helpers.NewConnection();
             var nameParam = "@name";
             var cmd = new SqlCommand($"select id from product where lower(name) like {nameParam}", conn);
+
             cmd.Parameters.Add(nameParam, SqlDbType.NVarChar);
             cmd.Parameters[nameParam].Value = "%" + name.ToLower() + "%";
+
             conn.Open();
 
             var rdr = cmd.ExecuteReader();
@@ -87,7 +90,9 @@ namespace refactor_me.Repository
             else
             {
                 var conn = Helpers.NewConnection();
+
                 conn.Open();
+
                 cmd = new SqlCommand($"insert into product (id, name, description, price, deliveryprice) values ({idParam}, {nameParam}, {descrParam}, {priceParam}, {deliveryParam})", conn);
 
                 cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);
