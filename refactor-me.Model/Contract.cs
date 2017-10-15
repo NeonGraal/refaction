@@ -18,7 +18,7 @@ namespace refactor_me.Model.Contract
 
     public interface IProductList
     {
-        ICollection<IProduct> Items { get; }
+        IEnumerable<IProduct> Items { get; }
     }
 
     public interface IProductOption
@@ -32,8 +32,14 @@ namespace refactor_me.Model.Contract
         string Description { get; }
     }
 
-    public interface IProducts
+    public interface IProductsService
     {
         IProductList GetAll();
+    }
+
+    public interface IProductsRepository
+    {
+        IEnumerable<Guid> All();
+        IProduct Get(Guid id);
     }
 }
