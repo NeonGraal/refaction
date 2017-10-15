@@ -13,6 +13,7 @@ namespace refactor_me.Controllers
         public Products GetAll()
         {
             return new Products();
+            // _model.GetAll();
         }
 
         [Route]

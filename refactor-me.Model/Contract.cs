@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace refactor_me.Model.Contract
 {
-    public interface Product
+    public interface IProduct
     {
         Guid Id { get; }
 
@@ -15,7 +16,12 @@ namespace refactor_me.Model.Contract
         decimal DeliveryPrice { get; }
     }
 
-    public interface ProductOption
+    public interface IProductList
+    {
+        ICollection<IProduct> Items { get; }
+    }
+
+    public interface IProductOption
     {
         Guid Id { get; }
 
@@ -24,5 +30,10 @@ namespace refactor_me.Model.Contract
         string Name { get; }
 
         string Description { get; }
+    }
+
+    public interface IProducts
+    {
+        IProductList GetAll();
     }
 }
