@@ -25,3 +25,9 @@ To install:
 2. Run `pip install -r requirements.txt`
 
 They assume that the Web Api is running at a base URL of `http://localhost:58123`
+
+## Other versions
+Whilst researching I came across the following clones of the original refaction repository
+* https://github.com/mingyu717/mingyurafction
+* https://github.com/klegaspi/refaction
+* https://github.com/thomknot/Refaction-FResddsf
