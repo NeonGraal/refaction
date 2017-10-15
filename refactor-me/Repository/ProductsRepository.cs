@@ -64,6 +64,35 @@ namespace refactor_me.Repository
             };
         }
 
+        public void Save(IProduct product, bool exists)
+        {
+            var conn = Helpers.NewConnection();
+            var idParam = "@Id";
+            var nameParam = "@Name";
+            var descrParam = "@Descr";
+            var priceParam = "@Price";
+            var deliveryParam = "@Delivery";
+            var cmdSql = exists ?
+                $"insert into product (id, name, description, price, deliveryprice) values ({idParam}, {nameParam}, {descrParam}, {priceParam}, {deliveryParam})" :
+                $"update product set name = {nameParam}, description = {descrParam}, price = {priceParam}, deliveryprice = {descrParam} where id = {idParam}";
+            var cmd = new SqlCommand(cmdSql, conn);
+
+            cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);
+            cmd.Parameters.Add(nameParam, SqlDbType.NVarChar);
+            cmd.Parameters.Add(descrParam, SqlDbType.NVarChar);
+            cmd.Parameters.Add(priceParam, SqlDbType.Decimal);
+            cmd.Parameters.Add(deliveryParam, SqlDbType.Decimal);
+
+            cmd.Parameters[idParam].Value = product.Id;
+            cmd.Parameters[nameParam].Value = product.Name;
+            cmd.Parameters[descrParam].Value = product.Description;
+            cmd.Parameters[priceParam].Value = product.Price;
+            cmd.Parameters[deliveryParam].Value = product.DeliveryPrice;
+
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+
         private class Product : IProduct
         {
             public decimal DeliveryPrice { get; set; }

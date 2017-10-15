@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using refactor_me.Model.Contract;
 using System.Linq;
+using System;
 
 namespace refactor_me.Model.Implementation
 {
@@ -11,6 +12,14 @@ namespace refactor_me.Model.Implementation
         public ProductsService(IProductsRepository repo)
         {
             _repo = repo;
+        }
+
+        public void Create(IProduct product)
+        {
+            if (_repo.Get(product.Id) == null)
+            {
+                _repo.Save(product, false);
+            }
         }
 
         public IProductList FindByName(string name)
@@ -24,6 +33,11 @@ namespace refactor_me.Model.Implementation
             }
 
             return result;
+        }
+
+        public IProduct Get(Guid id)
+        {
+            return _repo.Get(id);
         }
 
         public IProductList GetAll()

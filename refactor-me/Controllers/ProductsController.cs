@@ -32,10 +32,10 @@ namespace refactor_me.Controllers
 
         [Route("{id}")]
         [HttpGet]
-        public Product GetProduct(Guid id)
+        public IProduct GetProduct(Guid id)
         {
-            var product = new Product(id);
-            if (product.IsNew)
+            var product = _products.Get(id);
+            if (product == null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
 
             return product;
@@ -43,9 +43,9 @@ namespace refactor_me.Controllers
 
         [Route]
         [HttpPost]
-        public void Create(Product product)
+        public void Create(JsonProduct product)
         {
-            product.Save();
+            _products.Create(product);
         }
 
         [Route("{id}")]
@@ -118,6 +118,19 @@ namespace refactor_me.Controllers
         {
             var opt = new ProductOption(id);
             opt.Delete();
+        }
+
+        public class JsonProduct : IProduct
+        {
+            public decimal DeliveryPrice { get; set; }
+
+            public string Description { get; set; }
+
+            public Guid Id { get; set; }
+
+            public string Name { get; set; }
+
+            public decimal Price { get; set; }
         }
     }
 }

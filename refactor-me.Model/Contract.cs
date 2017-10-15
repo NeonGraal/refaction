@@ -36,6 +36,8 @@ namespace refactor_me.Model.Contract
     {
         IProductList GetAll();
         IProductList FindByName(string name);
+        IProduct Get(Guid id);
+        void Create(IProduct product);
     }
 
     public interface IProductsRepository
@@ -44,5 +46,6 @@ namespace refactor_me.Model.Contract
         IEnumerable<Guid> ByName(string name);
 
         IProduct Get(Guid id);
+        void Save(IProduct product, bool exists);
     }
 }

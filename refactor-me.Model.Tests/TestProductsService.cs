@@ -11,7 +11,7 @@ namespace refactor_me.Model.Implementation.Tests
     {
         private Mock<IProductsRepository> _repo;
 
-        private ProductsService _service;
+        private IProductsService _service;
 
         [SetUp]
         public void SetUp()
@@ -98,6 +98,55 @@ namespace refactor_me.Model.Implementation.Tests
             var result = _service.FindByName(name);
 
             result.Items.Should().BeEquivalentTo(prod1.Object, prod2.Object);
+        }
+
+        [Test]
+        public void GetUnknownReturnsNull()
+        {
+            _repo.Setup(r => r.Get(_id1)).Returns<IProduct>(null);
+
+            var result = _service.Get(_id1);
+
+            result.Should().BeNull();
+        }
+
+        [Test]
+        public void GetKnownReturnsProduct()
+        {
+            var prod1 = new Mock<IProduct>(MockBehavior.Strict);
+            _repo.Setup(r => r.Get(_id1)).Returns(prod1.Object);
+
+            var result = _service.Get(_id1);
+
+            result.Should().Be(prod1.Object);
+        }
+
+        [Test]
+        public void CreateSavesNewProduct()
+        {
+            var prod = new Mock<IProduct>(MockBehavior.Strict);
+            prod.SetupGet(p => p.Id).Returns(_id1);
+
+            _repo.Setup(r => r.Get(_id1)).Returns<IProduct>(null);
+            _repo.Setup(r => r.Save(prod.Object, false)).Verifiable();
+
+            _service.Create(prod.Object);
+
+            _repo.Verify(r => r.Save(prod.Object, false), Times.Once);
+        }
+
+        [Test]
+        public void CreateDoesntSaveExistingProduct()
+        {
+            var prod = new Mock<IProduct>(MockBehavior.Strict);
+            prod.SetupGet(p => p.Id).Returns(_id1);
+
+            _repo.Setup(r => r.Get(_id1)).Returns(prod.Object);
+            _repo.Setup(r => r.Save(prod.Object, false)).Verifiable();
+
+            _service.Create(prod.Object);
+
+            _repo.Verify(r => r.Save(prod.Object, false), Times.Never);
         }
     }
 }

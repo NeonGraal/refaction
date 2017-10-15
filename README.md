@@ -10,3 +10,5 @@
    1. First Unit Test
    2. Refactor controller GetAll to use service
    3. Refactor controller SearchByName to use service
+   4. Refactor controller GetProduct to use service
+   5. Refactor controller Create to use service
