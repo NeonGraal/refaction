@@ -8,3 +8,5 @@
 4. Capture Original DB
 5. Separate Model into own assembly/project. No functional changes.
    1. First Unit Test
+   2. Refactor controller GetAll to use service
+   3. Refactor controller SearchByName to use service

@@ -25,9 +25,9 @@ namespace refactor_me.Controllers
 
         [Route]
         [HttpGet]
-        public Products SearchByName(string name)
+        public IProductList SearchByName(string name)
         {
-            return new Products(name);
+            return _products.FindByName(name);
         }
 
         [Route("{id}")]

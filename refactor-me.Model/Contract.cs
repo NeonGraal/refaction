@@ -35,11 +35,14 @@ namespace refactor_me.Model.Contract
     public interface IProductsService
     {
         IProductList GetAll();
+        IProductList FindByName(string name);
     }
 
     public interface IProductsRepository
     {
         IEnumerable<Guid> All();
+        IEnumerable<Guid> ByName(string name);
+
         IProduct Get(Guid id);
     }
 }

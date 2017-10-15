@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using refactor_me.Model.Contract;
+using System.Linq;
 
 namespace refactor_me.Model.Implementation
 {
@@ -13,11 +13,24 @@ namespace refactor_me.Model.Implementation
             _repo = repo;
         }
 
-        public IProductList GetAll()
+        public IProductList FindByName(string name)
         {
-            var ids = _repo.All();
             var result = new ProductList();
 
+            var ids = _repo.ByName(name);
+            foreach (var i in ids)
+            {
+                result.Add(_repo.Get(i));
+            }
+
+            return result;
+        }
+
+        public IProductList GetAll()
+        {
+            var result = new ProductList();
+
+            var ids = _repo.All();
             foreach (var i in ids)
             {
                 result.Add(_repo.Get(i));
