@@ -20,7 +20,10 @@ namespace refactor_me
 
             container.RegisterType<IProductsRepository, ProductsRepository>();
             container.RegisterType<IProductsService, ProductsService>();
-            
+
+            container.RegisterType<IProductOptionsRepository, ProductOptionsRepository>();
+            container.RegisterType<IProductOptionsService, ProductOptionsService>();
+
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
         }
     }

@@ -42,8 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Contract.cs" />
-    <Compile Include="Implementation.cs" />
+    <Compile Include="Products.Contract.cs" />
+    <Compile Include="ProductOptions.Implementation.cs" />
+    <Compile Include="ProductOptions.Contract.cs" />
+    <Compile Include="Products.Implementation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

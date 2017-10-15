@@ -7,7 +7,7 @@ using System.Data;
 
 namespace refactor_me.Repository
 {
-    public class ProductsRepository : IProductsRepository
+    public class ProductsRepository : BaseRepository, IProductsRepository
     {
         public IEnumerable<Guid> All()
         {
@@ -44,19 +44,6 @@ namespace refactor_me.Repository
             return ids;
         }
 
-        private SqlCommand IdSqlCommand(string sql, Guid id)
-        {
-            var conn = Helpers.NewConnection();
-            conn.Open();
-
-            var idParam = "@Id";
-            var cmd = new SqlCommand($"{sql} = {idParam}", conn);
-            cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);
-            cmd.Parameters[idParam].Value = id;
-
-            return cmd;
-        }
-
         public IProduct Get(Guid id)
         {            
             var cmd = IdSqlCommand("select * from product where id", id);
@@ -80,36 +67,44 @@ namespace refactor_me.Repository
             var cmd = IdSqlCommand("delete from productoption where productid", id);
             cmd.ExecuteNonQuery();
 
-            cmd = IdSqlCommand("delete from product where id = ", id);
+            cmd = IdSqlCommand("delete from product where id", id);
             cmd.ExecuteNonQuery();
         }
 
         public void Save(IProduct product, bool exists)
         {
-            var conn = Helpers.NewConnection();
             var idParam = "@Id";
             var nameParam = "@Name";
             var descrParam = "@Descr";
             var priceParam = "@Price";
             var deliveryParam = "@Delivery";
-            var cmdSql = exists ?
-                $"insert into product (id, name, description, price, deliveryprice) values ({idParam}, {nameParam}, {descrParam}, {priceParam}, {deliveryParam})" :
-                $"update product set name = {nameParam}, description = {descrParam}, price = {priceParam}, deliveryprice = {descrParam} where id = {idParam}";
-            var cmd = new SqlCommand(cmdSql, conn);
 
-            cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);
+            SqlCommand cmd;
+
+            if (exists)
+            {
+                cmd = IdSqlCommand($"update product set name = {nameParam}, description = {descrParam}, price = {priceParam}, deliveryprice = {descrParam} where id", product.Id);
+            }
+            else
+            {
+                var conn = Helpers.NewConnection();
+                conn.Open();
+                cmd = new SqlCommand($"insert into product (id, name, description, price, deliveryprice) values ({idParam}, {nameParam}, {descrParam}, {priceParam}, {deliveryParam})", conn);
+
+                cmd.Parameters.Add(idParam, SqlDbType.UniqueIdentifier);
+                cmd.Parameters[idParam].Value = product.Id;
+            }
+
             cmd.Parameters.Add(nameParam, SqlDbType.NVarChar);
             cmd.Parameters.Add(descrParam, SqlDbType.NVarChar);
             cmd.Parameters.Add(priceParam, SqlDbType.Decimal);
             cmd.Parameters.Add(deliveryParam, SqlDbType.Decimal);
 
-            cmd.Parameters[idParam].Value = product.Id;
             cmd.Parameters[nameParam].Value = product.Name;
             cmd.Parameters[descrParam].Value = product.Description;
             cmd.Parameters[priceParam].Value = product.Price;
             cmd.Parameters[deliveryParam].Value = product.DeliveryPrice;
 
-            conn.Open();
             cmd.ExecuteNonQuery();
         }
 

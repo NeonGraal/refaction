@@ -14,3 +14,4 @@
    5. Refactor controller Create to use service
    6. Refactor controller Update to use service
    7. Refactor controller Delete to use service
+   8. Refactor All Product Option Controller methods to use Options service

@@ -124,18 +124,22 @@ namespace refactor_me.Model.Implementation.Tests
         [Test]
         public void CreateSavesNewProduct()
         {
-            var prod = new Mock<IProduct>(MockBehavior.Strict);
-            prod.SetupGet(p => p.Id).Returns(_id1);
+            var prod1 = new Mock<IProduct>(MockBehavior.Strict);
+            prod1.SetupGet(p => p.Id).Returns(_id1);
+
+            IProduct prod2 = null;
 
             _repo.Setup(r => r.Get(_id1)).Returns<IProduct>(null);
-            _repo.Setup(r => r.Save(prod.Object, true)).Verifiable();
-            _repo.Setup(r => r.Save(prod.Object, false)).Verifiable();
+            _repo.Setup(r => r.Save(prod1.Object, true)).Verifiable();
+            _repo.Setup(r => r.Save(prod1.Object, false)).Callback<IProduct, bool>((p, _) => prod2 = p);
 
-            _service.Create(prod.Object);
+            _service.Create(prod1.Object);
 
             _repo.Verify(r => r.Get(_id1), Times.Once);
-            _repo.Verify(r => r.Save(prod.Object, true), Times.Never);
-            _repo.Verify(r => r.Save(prod.Object, false), Times.Once);
+            _repo.Verify(r => r.Save(prod1.Object, true), Times.Never);
+            _repo.Verify(r => r.Save(prod1.Object, false), Times.Once);
+
+            prod2.Should().Be(prod1.Object);
         }
 
         [Test]

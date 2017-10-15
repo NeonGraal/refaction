@@ -10,10 +10,12 @@ namespace refactor_me.Controllers
     public class ProductsController : ApiController
     {
         private readonly IProductsService _products;
+        private readonly IProductOptionsService _options;
 
-        public ProductsController(IProductsService products)
+        public ProductsController(IProductsService products, IProductOptionsService options)
         {
             _products = products;
+            _options = options;
         }
 
         [Route]
@@ -64,17 +66,17 @@ namespace refactor_me.Controllers
 
         [Route("{productId}/options")]
         [HttpGet]
-        public ProductOptions GetOptions(Guid productId)
+        public IProductOptionList GetOptions(Guid productId)
         {
-            return new ProductOptions(productId);
+            return _options.GetAll(productId);
         }
 
         [Route("{productId}/options/{id}")]
         [HttpGet]
-        public ProductOption GetOption(Guid productId, Guid id)
+        public IProductOption GetOption(Guid productId, Guid id)
         {
-            var option = new ProductOption(id);
-            if (option.IsNew)
+            var option = _options.Get(id);
+            if (option == null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
 
             return option;
@@ -82,32 +84,23 @@ namespace refactor_me.Controllers
 
         [Route("{productId}/options")]
         [HttpPost]
-        public void CreateOption(Guid productId, ProductOption option)
+        public void CreateOption(Guid productId, JsonProductOption option)
         {
-            option.ProductId = productId;
-            option.Save();
+            _options.Create(productId, option);
         }
 
         [Route("{productId}/options/{id}")]
         [HttpPut]
-        public void UpdateOption(Guid id, ProductOption option)
+        public void UpdateOption(Guid id, JsonProductOption option)
         {
-            var orig = new ProductOption(id)
-            {
-                Name = option.Name,
-                Description = option.Description
-            };
-
-            if (!orig.IsNew)
-                orig.Save();
+            _options.Update(id, option);
         }
 
         [Route("{productId}/options/{id}")]
         [HttpDelete]
         public void DeleteOption(Guid id)
         {
-            var opt = new ProductOption(id);
-            opt.Delete();
+            _options.Delete(id);
         }
 
         public class JsonProduct : IProduct
@@ -121,6 +114,17 @@ namespace refactor_me.Controllers
             public string Name { get; set; }
 
             public decimal Price { get; set; }
+        }
+
+        public class JsonProductOption : IProductOption
+        {
+            public string Description { get; set; }
+
+            public Guid Id { get; set; }
+
+            public string Name { get; set; }
+
+            public Guid ProductId { get; set; }
         }
     }
 }

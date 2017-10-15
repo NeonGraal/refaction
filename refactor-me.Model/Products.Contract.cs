@@ -21,17 +21,6 @@ namespace refactor_me.Model.Contract
         IEnumerable<IProduct> Items { get; }
     }
 
-    public interface IProductOption
-    {
-        Guid Id { get; }
-
-        Guid ProductId { get; }
-
-        string Name { get; }
-
-        string Description { get; }
-    }
-
     public interface IProductsService
     {
         IProductList GetAll();
